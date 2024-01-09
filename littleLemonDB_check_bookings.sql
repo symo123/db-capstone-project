@@ -27,3 +27,27 @@ DELIMITER ;
 
 call CheckBooking("2022-11-12", 3);
 
+DROP procedure AddValidBooking;
+
+DELIMITER //
+CREATE PROCEDURE AddValidBooking(d DATE, t INT)
+BEGIN
+	DECLARE booked int;
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION ROLLBACK;
+    START TRANSACTION;
+    INSERT INTO bookings (date, bookings.table) VALUES (d, t);
+    SET booked = (SELECT COUNT(booking_id) FROM bookings WHERE date = d and bookings.table = t);
+    IF (booked = 1) THEN
+		SELECT CONCAT("Table ", t, " is free, booking confirmed");
+		COMMIT;
+	else
+		SELECT CONCAT("Table ", t, " is already booked, canceling booking")
+		ROLLBACK;
+	END IF;
+		
+END //
+DELIMITER ;
+
+call AddValidBooking("2022-12-17", 6);
+
+
