@@ -13,7 +13,7 @@ WHERE
 SELECT * FROM OrderView;
 
 SELECT
-	customer_id,
+	orders.customer_id,
     concat(firstName, ' ', lastName) as fullName,
     order_id,
     cost,
@@ -23,3 +23,12 @@ SELECT
 FROM orders
 JOIN customers on customers.customer_id = orders.customer_id
 JOIN menu on menu.menu_id = orders.menu_id
+;
+
+
+SELECT
+	name
+FROM menu
+WHERE menu_id = ANY(SELECT menu_id FROM orders WHERE quantity > 2)
+;
+
